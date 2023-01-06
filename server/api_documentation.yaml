@@ -1,0 +1,296 @@
+swagger: "2.0"
+info:
+  title: PowFinder_API
+  description: PowFinder Server Side Logic and Data Handling
+  version: 1.0.0
+host: localhost:4000
+basePath: /v2
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  basicAuth:
+    type: basic
+      
+paths: 
+ 
+  /api/auth/signup:
+    post:
+      security:
+        - basicAuth: []
+      summary: Allows new user to sign up using email and password; returns JWT token
+      tags:
+        - Basic auth user sign up
+      parameters:
+        - in: body
+          required: true
+          name: email
+          description: user email
+          schema:
+            type: string
+        - in: body
+          required: true
+          name: password
+          description: user password
+          schema:
+            type: string  
+      produces: 
+        - application/json
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema: 
+                $ref: '#/definitions/schemas/User'
+        '400':
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+         
+  /api/auth/signin:
+    post:
+      security: 
+        - basicAuth: []
+      summary: Allows user to sign in using email and password; returns JWT token
+      tags:
+        - Basic auth user sign in
+      parameters:
+        - in: body
+          required: true
+          name: email
+          description: user email
+          schema:
+            type: string
+        - in: body
+          required: true
+          name: password
+          description: user password
+          schema:
+            type: string  
+      produces: 
+        - application/json
+      responses:
+        '200':
+          description: Sign in success
+          content:
+            application/json:
+              schema: 
+                $ref: '#/definitions/schemas/User'
+        '400':
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+        '401':
+          description: Incorrect user credentials
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+          
+  /api/user/{id}/addpass
+    post:
+      security:
+        - basicAuth: []
+      summary: Allows user to add seasonal ski pass
+      tags:
+        - Add user season pass
+      parameters: 
+        - in: path
+          required: true
+          description: The ID of the user to add pass to
+          schema:
+           type: integer
+        - in: body
+          required: true
+          name: season pass name
+          description: user season ski pass
+          schema:
+            type: string
+            
+      responses:
+        '200':
+          description: Ski pass was successfully added
+          content:
+            application/json:
+              schema: 
+                $ref: '#/definitions/schemas/User'
+        '403':
+          description: User is unauthorized
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+          
+  /api/user/{id}/updateinfo
+    put:
+      security:
+        - basicAuth: []
+      summary: Update user information
+      tags:
+        - Update user's info
+      description: Update user log in credentials or edit pass info
+      parameters: 
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to update
+          schema:
+            type: integer
+        - name: user
+          in: body
+          required: true
+          description: Info to update current user with
+          schema:
+            type: object
+              $ref: '#/definitions/schemas/User'
+      responses:
+        '200':
+          description: User is successfully updated
+          content:
+            application/json:
+              schema: 
+                $ref: '#/definitions/schemas/User'
+        '400':
+          description: Invalid request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+        '404':
+          description: User not found
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+              
+        
+      
+  /api/user/{id}/delete
+    delete:
+      security:
+        - basicAuth: []
+      summary: Delete user by ID
+      description: Delete user and related data
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to delete
+          schema:
+            type: integer
+      responses: 
+        '200':
+          description: User deletion success
+        '404':
+          description: User with specified ID is not found
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+          
+      
+  /api/user/{id}
+    get:
+      security:
+        - basicAuth: []
+      summary: Get user by ID
+      description: Returns user data by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to return
+          schema:
+            type: integer
+      responses: 
+        '200':
+          description: User info by the ID
+          content:
+            application/json:
+              schema: 
+                $ref: '#/definitions/schemas/User'
+        '404': 
+          description: User with specified ID is not found
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content: 
+            application/json:
+              schema:
+                $ref: '#/definitions/schemas/Error'
+          
+  
+  
+  definitions:
+    schemas:
+    
+      User:
+        type: object
+        required:
+          - id
+          - email
+          - password
+        properties:
+          id: 
+            type: integer
+            description: Unique user identifier
+          email:
+            type: string
+            description: Email address of the user
+          password:
+            type: string
+            description: User's password
+          seasonPass:
+            type: stirng
+            description: User's season pass name
+            
+      Error:
+        type: object
+        required: 
+          - code
+          - message
+        properties: 
+          code:
+            type: integer
+          message: 
+            type: string
+          
+    
+          
+        
+      
