@@ -107,7 +107,7 @@ paths:
               schema:
                 $ref: '#/definitions/schemas/Error'
           
-  /api/user/{id}/addpass
+  /api/user/:id/addpass:
     post:
       security:
         - basicAuth: []
@@ -147,7 +147,7 @@ paths:
               schema:
                 $ref: '#/definitions/schemas/Error'
           
-  /api/user/{id}/updateinfo
+  /api/user/:id/updateinfo:
     put:
       security:
         - basicAuth: []
@@ -188,10 +188,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/definitions/schemas/Error'
-              
-        
-      
-  /api/user/{id}/delete
+                          
+  /api/user/:id/delete:
     delete:
       security:
         - basicAuth: []
@@ -219,9 +217,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/definitions/schemas/Error'
-          
-      
-  /api/user/{id}
+               
+  /api/user/:id:
     get:
       security:
         - basicAuth: []
@@ -254,8 +251,6 @@ paths:
               schema:
                 $ref: '#/definitions/schemas/Error'
           
-  
-  
   definitions:
     schemas:
     
