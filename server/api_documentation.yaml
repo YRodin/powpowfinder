@@ -21,14 +21,14 @@ paths:
     post:
       security:
         - basicAuth: []
-      summary: Allows new user to sign up using email and password; returns JWT token
+      summary: Allows new user to sign up using userName and password; returns JWT token
       tags:
         - Basic auth user sign up
       parameters:
         - in: body
           required: true
-          name: email
-          description: user email
+          name: userName
+          description: user userName
           schema:
             type: string
         - in: body
@@ -63,14 +63,14 @@ paths:
     post:
       security: 
         - basicAuth: []
-      summary: Allows user to sign in using email and password; returns JWT token
+      summary: Allows user to sign in using userName and password; returns JWT token
       tags:
         - Basic auth user sign in
       parameters:
         - in: body
           required: true
-          name: email
-          description: user email
+          name: userName
+          description: user userName
           schema:
             type: string
         - in: body
@@ -258,15 +258,15 @@ paths:
         type: object
         required:
           - id
-          - email
+          - userName
           - password
         properties:
           id: 
             type: integer
             description: Unique user identifier
-          email:
+         userName:
             type: string
-            description: Email address of the user
+            description: userName address of the user
           password:
             type: string
             description: User's password

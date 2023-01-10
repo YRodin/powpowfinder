@@ -5,3 +5,20 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 const JwtStrategy = require('passport-jwt').Strategy;
 const LocalStrategy = require('passport-local');
+
+//define local log in strategy
+const localLogin = new LocalStrategy(localOptions,
+  function(userName, password, done){
+    User.findOne({userName: userName}, function(err, user){
+      if(err) {return done(err);}
+      if(!user) { return done(null, false)}
+      if(!user.validPassword(password)){
+        return done(null, false, { message: 'Wrong Password!'})
+      }
+      return done(null, user);
+    });
+  }
+);
+
+// mount local strategy to passport
+passport.use(localLogin);

@@ -5,7 +5,7 @@ var jwt = require('jsonwebtoken');
 
 // define user model
 const UserSchema = new Schema({
-  email: { type: String, unique: true, lowercase: true },
+  userName: { type: String, unique: true},
   seasonPass: String,
   hash: String,
   salt: String
