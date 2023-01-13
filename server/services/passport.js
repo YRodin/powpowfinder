@@ -7,6 +7,10 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const LocalStrategy = require('passport-local');
 
 //define local log in strategy
+const localOptions = {
+  usernameField: 'userName',
+  passwordField: 'password'
+}
 const localLogin = new LocalStrategy(localOptions,
   function(userName, password, done){
     User.findOne({userName: userName}, function(err, user){
@@ -20,5 +24,27 @@ const localLogin = new LocalStrategy(localOptions,
   }
 );
 
+// Setup options for JWT Strategy
+const jwtOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: keys.TOKEN_SECRET
+};
+const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {
+  // See if the user ID in the payload exists in our database
+  // If it does, call 'done' with that other
+  // otherwise, call done without a user object
+  User.findById(payload.sub, function(err, user) {
+    if (err) { return done(err, false) }
+
+    if (user) {
+      done(null, user)
+    } else {
+      done(null, false)
+    }
+  });
+});
+
+
 // mount local strategy to passport
 passport.use(localLogin);
+passport.use(jwtLogin);

@@ -107,7 +107,7 @@ paths:
               schema:
                 $ref: '#/definitions/schemas/Error'
           
-  /api/user/:id/addpass:
+  /api/user/addpass:
     post:
       security:
         - basicAuth: []
@@ -115,11 +115,11 @@ paths:
       tags:
         - Add user season pass
       parameters: 
-        - in: path
-          required: true
-          description: The ID of the user to add pass to
-          schema:
-           type: integer
+        # - in: path
+        #   required: true
+        #   description: The ID of the user to add pass to
+        #   schema:
+        #    type: integer
         - in: body
           required: true
           name: season pass name
@@ -147,7 +147,7 @@ paths:
               schema:
                 $ref: '#/definitions/schemas/Error'
           
-  /api/user/:id/updateinfo:
+  /api/user/updateinfo:
     put:
       security:
         - basicAuth: []
@@ -156,12 +156,12 @@ paths:
         - Update user's info
       description: Update user log in credentials or edit pass info
       parameters: 
-        - name: userId
-          in: path
-          required: true
-          description: The ID of the user to update
-          schema:
-            type: integer
+        # - name: userId
+        #   in: path
+        #   required: true
+        #   description: The ID of the user to update
+        #   schema:
+        #     type: integer
         - name: user
           in: body
           required: true
@@ -189,7 +189,7 @@ paths:
               schema:
                 $ref: '#/definitions/schemas/Error'
                           
-  /api/user/:id/delete:
+  /api/user/delete:
     delete:
       security:
         - basicAuth: []
@@ -203,7 +203,7 @@ paths:
           schema:
             type: integer
       responses: 
-        '200':
+        '204':
           description: User deletion success
         '404':
           description: User with specified ID is not found
@@ -218,7 +218,7 @@ paths:
               schema:
                 $ref: '#/definitions/schemas/Error'
                
-  /api/user/:id:
+  /api/user:
     get:
       security:
         - basicAuth: []
@@ -264,7 +264,7 @@ paths:
           id: 
             type: integer
             description: Unique user identifier
-         userName:
+          userName:
             type: string
             description: userName address of the user
           password:

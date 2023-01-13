@@ -15,3 +15,8 @@ mongoose.connect(keys.MONGODB_URI, {
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+router(app);
+const port = process.env.PORT || 5001;
+const server = http.createServer(app);
+server.listen(port);
+console.log('Server listening on:', port);
