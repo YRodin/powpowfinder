@@ -10,6 +10,6 @@ module.exports = function(app) {
   app.post('/api/auth/signin', requireSignin, authentication.signin);
   app.post('/api/auth/signup', authentication.signup);
   app.post('/api/user/addpass', requireAuth, manageUser.addPass);
-  // app.put('/api/user/updateinfo', requireAuth, manageUser.updateInfo);
+  app.put('/api/user/updateinfo', requireAuth, manageUser.updateInfo);
   app.delete('/api/user/delete', requireAuth, manageUser.delete);
 };
