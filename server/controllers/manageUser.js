@@ -30,9 +30,13 @@ exports.updateInfo = function (req, res, next) {
   User.findByIdAndUpdate(req.user._id, req.body, function(err, user) {
     if(err) { res.status(500).json({ error: 'Failed to update account' })} 
     else {
-      user.save();
-      console.log(user);
-      res.json(user)
+      user.save((err, user) => {
+        if (err) { console.log(err); }
+        else {
+          console.log(user);
+          res.json(user)
+        }
+      });
     }
   })
 }
@@ -40,7 +44,7 @@ exports.updateInfo = function (req, res, next) {
 exports.delete = function (req, res, next) {
   // delete DB entry
   // redirect to /home
-  User.findOneAndDelete({userName: req.user.userName}, (err, user) => {
+  User.findByIdAndDelete(req.user._id, (err, user) => {
     if (err) { return next(err) }
     else {
       res.status(204).json({ message: 'User deleted successfully'});

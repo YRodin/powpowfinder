@@ -30,11 +30,10 @@ const jwtOptions = {
   secretOrKey: keys.TOKEN_SECRET
 };
 const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {
-  // See if the user ID in the payload exists in our database
-  // If it does, call 'done' with that other
-  // otherwise, call done without a user object
+  console.log(`JWT login passport service is invoked inside jwt login!`);
+
   User.findById(payload.sub, function(err, user) {
-    if (err) { return done(err, false) }
+    if (err) { return done(err, false); }
 
     if (user) {
       done(null, user)
@@ -43,7 +42,6 @@ const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {
     }
   });
 });
-
 
 // mount local strategy to passport
 passport.use(localLogin);

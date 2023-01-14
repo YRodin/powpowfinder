@@ -1,5 +1,5 @@
 - debug api/user/updateinfo manageuser.js controller
-: upodate pass in model.update
+: upodate pass in .update
 - protected routes must always check for a JWT (jwtLogin passport.js) on the request obj and send response with an updated JWT so that it stays fresh
 - Client: save JWT in Redux State (JWT: AuthHeaderAsBearerToken) and always include in requests to api endpoints. 
 - ! app is documented for https but is using http protocol, double check

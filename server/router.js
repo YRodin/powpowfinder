@@ -9,6 +9,7 @@ const requireSignin = passport.authenticate('local', { session: false });
 module.exports = function(app) {
   app.post('/api/auth/signin', requireSignin, authentication.signin);
   app.post('/api/auth/signup', authentication.signup);
+  app.get('/api/user', requireAuth,  authentication.currentUser);
   app.post('/api/user/addpass', requireAuth, manageUser.addPass);
   app.put('/api/user/updateinfo', requireAuth, manageUser.updateInfo);
   app.delete('/api/user/delete', requireAuth, manageUser.delete);

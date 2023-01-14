@@ -196,17 +196,17 @@ paths:
       summary: Delete user by ID
       description: Delete user and related data
       parameters:
-        - name: userId
-          in: path
-          required: true
-          description: The ID of the user to delete
-          schema:
-            type: integer
+        # - name: userId
+        #   in: path
+        #   required: true
+        #   description: The ID of the user to delete
+        #   schema:
+        #     type: integer
       responses: 
         '204':
           description: User deletion success
-        '404':
-          description: User with specified ID is not found
+        '401':
+          description: User unauthorized
           content: 
             application/json:
               schema:

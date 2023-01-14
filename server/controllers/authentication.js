@@ -14,8 +14,12 @@ exports.signin = function(req, res, next) {
   })
 }
 
-exports.currentUser = function(req, res) {
-  res.send(req.user)
+exports.currentUser = function(req, res, next) {
+  console.log(`current user controller is invoked`)
+  User.findById(req.user._id, (err, user) => {
+    if(err) { return next(err); }
+    res.json(user);
+  })
 }
 
 exports.signup = function(req, res, next) {
