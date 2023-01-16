@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 
 //apply conditional rendering for sign in/up || sign out links in NavigationBar
 const NavigationBar = () => {
-  const isLoggedIn = useSelector((state) => state.isLoggedIn);
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   return (
     <div>
       <Navbar bg="dark" variant="dark">
