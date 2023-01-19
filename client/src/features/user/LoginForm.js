@@ -4,8 +4,8 @@ import * as yup from "yup";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useDispatch } from "react-redux";
-import { signinAsync } from "./UserSlice";
-import { useHistory } from "react-router-dom";
+import { signin } from "./UserSlice";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const schema = yup.object().shape({
@@ -16,13 +16,13 @@ const LoginForm = () => {
     validationSchema: schema,
   });
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const onSubmit = (data) => {
     // append user data to redux state
-    dispatch(signinAsync(data));
+    dispatch(signin(data));
     // redirect to home page
-    history.push("/");
+    navigate.push("/");
   };
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>

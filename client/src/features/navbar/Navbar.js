@@ -4,8 +4,8 @@ import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import { useSelector } from "react-redux";
 
-//apply conditional rendering for sign in/up || sign out links in NavigationBar
-const NavigationBar = () => {
+//apply conditional rendering for sign in/up || sign out links in NavBar
+const NavBar = () => {
   const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   return (
     <div>
@@ -33,4 +33,4 @@ const NavigationBar = () => {
     </div>
   );
 };
-export default NavigationBar;
+export default NavBar;
