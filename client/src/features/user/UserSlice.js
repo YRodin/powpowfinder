@@ -10,44 +10,54 @@ const initialState = {
 };
 
 // async signin request to api; returns jwt;
-export const signin = (data) => createAsyncThunk(
+export const signin = createAsyncThunk(
   'user/signin',
-  axios.post('http://localhost:5001/api/auth/signin', data)
-    .then(response => {
-      return response;
-    })
-    .catch(err => console.log(err))
+  async (data) => {
+    try{
+      const response = await axios.post('http://localhost:5001/api/auth/signin', data)
+      return response.data;
+    } catch(err) {
+      console.log(err);;
+    }
+  }
 );
 
-export const signup = (data) => createAsyncThunk(
+export const signup = createAsyncThunk(
   'user/signup',
-  axios.post('http://localhost:5001/api/auth/signup', data)
-  .then(response => {
-    return response;
-  })
-  .catch(err => console.log(err))
+  async(data) => {
+    try{
+      const response = await axios.post('http://localhost:5001/api/auth/signup', data)
+      return response.data; 
+    } catch(err) {
+      console.log(err);
+    }
+  }
 );
 
-export const editUser = (data) => {
-  createAsyncThunk(
+export const editUser = createAsyncThunk(
     'user/editUser',
-    axios.put('http://localhost:5001/api/user/updateinfo', data)
-    .then(response => {
-      return response;
-    })
-    .catch(err => console.log(err))
+    async (data) => {
+      try {
+        const response = await axios.put('http://localhost:5001/api/user/updateinfo', data);
+        return response.data;
+      } catch(err) {
+        console.log(err);
+    }
+  }
   )
-}
-export const deleteUser = () => {
-  createAsyncThunk(
+
+export const deleteUser = createAsyncThunk(
     'user/deleteUser',
-    axios.delete('http://localhost:5001/api//api/user/delete')
-    .then(response => {
-      return response;
-    })
-    .catch(err => console.log(err))
+    async () => {
+      try {
+        const response = await axios.delete('http://localhost:5001/api//api/user/delete');
+        return response.data;
+      } catch(err) {
+        console.log(err);
+      }
+    }
   )
-}
+
 
 export const userSlice = createSlice({
   name: 'user',

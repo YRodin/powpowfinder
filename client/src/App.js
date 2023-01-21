@@ -14,12 +14,12 @@ function App() {
       <Navbar/>
       <BrowserRouter>
         <Routes>
-          <Route index element={<div>hello world</div>}></Route>
-          <Route path="" element={<></>}></Route>
-          <Route path="" element={<></>}></Route>
-          <Route path="" element={<></>}></Route>
-          <Route path="" element={<></>}></Route>
-          <Route path="" element={<></>}></Route>
+          <Route index element={<p>Welcome to PF!</p>}></Route>
+          <Route path="/user/delete" element={<DeleteUser/>}></Route>
+          <Route path="/user/login" element={<LoginForm/>}></Route>
+          <Route path="/user/signup" element={<SignUpForm/>}></Route>
+          <Route path="/user/edit" element={<EditUserForm/>}></Route>
+          {/* <Route path="" element={}></Route> */}
         </Routes>
       </BrowserRouter>
     </div>
