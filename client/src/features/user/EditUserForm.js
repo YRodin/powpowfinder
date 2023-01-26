@@ -8,43 +8,38 @@ import { editUser } from "./UserSlice";
 import { useNavigate } from "react-router-dom";
 
 const EditUserForm = () => {
-  const schema = yup.object().shape({
-    userName: yup.string(),
-    password: yup.string().min(7),
-    seasonPass: yup.string(),
-  });
-  const { register, handleSubmit, errors } = useForm({
-    validationSchema: schema,
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { userName, seasonPass } = useSelector((state) => state.user);
 
   const onSubmit = (data) => {
-    // dispatch api Put request and save data in redux state  
+    // dispatch api Put request and save data in redux state
     dispatch(editUser(data));
     // redirect to home page
-    navigate.push("/");
+    navigate("/user");
   };
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <Form.Group className="mb-3" controlId="formBasicEmail">
+      <Form.Group className="mb-3">
         <Form.Label>Update User Name</Form.Label>
         <Form.Control
           type="userName"
-          name="userName"
           placeholder={userName}
-          ref={register}
+          {...register("userName")}
         />
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formBasicEmail">
+      <Form.Group className="mb-3">
         <Form.Label>Update Season Pass</Form.Label>
         <Form.Control
           type="seasonPass"
-          name="seasonPass"
           placeholder={seasonPass}
-          ref={register}
+          {...register("seasonPass")}
         />
       </Form.Group>
 
@@ -53,8 +48,7 @@ const EditUserForm = () => {
         <Form.Control
           type="password"
           placeholder="Password"
-          name="password"
-          ref={register}
+          {...register("password")}
         />
       </Form.Group>
 

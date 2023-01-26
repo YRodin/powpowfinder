@@ -3,47 +3,50 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signin } from "./UserSlice";
 import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
-  const schema = yup.object().shape({
-    userName: yup.string().required(),
-    password: yup.string().min(7).required(),
-  });
-  const { register, handleSubmit, errors } = useForm({
-    validationSchema: schema,
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const isLoggedIn = useSelector(state => state.user.isLoggedIn)
   const onSubmit = (data) => {
-    // append user data to redux state
     dispatch(signin(data));
-    // redirect to home page
-    navigate.push("/");
+    navigate("/user");
+    // if(isLoggedIn) {
+ 
+    // } else {
+    //   console.log()
+    //   console.error("Error Logging In")
+    // }
+    
   };
+
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <Form.Group className="mb-3" controlId="formBasicEmail">
+      <Form.Group className="mb-3" >
         <Form.Label>User Name</Form.Label>
         <Form.Control
-          type="userName"
-          name="userName"
-          placeholder="Enter username"
-          ref={register}
+          type="text"
+          placeholder="Enter user name"
+          {...register("userName", { required: "Required" })}
         />
         {errors.userName && <p>This field is required</p>}
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formBasicPassword">
+      <Form.Group className="mb-3">
         <Form.Label>Password</Form.Label>
         <Form.Control
           type="password"
           placeholder="Password"
-          name="password"
-          ref={register}
+          {...register("password", { required: "Required" })}
         />
         {errors.password && <p>This field is required</p>}
       </Form.Group>

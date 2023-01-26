@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 // import * as yup from "yup";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signup } from "./UserSlice";
 import { useNavigate } from "react-router-dom";
 import Row from "react-bootstrap/Row";
@@ -15,12 +15,19 @@ function SignUpForm(props) {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const isLoggedIn = useSelector(state => state.user.isLoggedIn)
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const onSubmit = (data) => {
     console.log(data);
     dispatch(signup(data));
-    navigate("/");
+    navigate("/user");
+    // if(isLoggedIn) {
+      
+    // } else {
+    //   console.error("Error Logging In")
+    // }
   };
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>

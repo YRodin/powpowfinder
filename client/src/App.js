@@ -11,14 +11,16 @@ import Navbar from "./features/navbar/Navbar";
 function App() {
   return (
     <div>
-      <Navbar/>
+      {/* */}
       <BrowserRouter>
+      <Navbar/>
         <Routes>
-          <Route index element={<p>Welcome to PF!</p>}></Route>
+          <Route path="/" exact element={<></>}></Route>
+          <Route path="/user" exact element={<><MainUser/></>}></Route>
           <Route path="/user/delete" element={<DeleteUser/>}></Route>
-          <Route path="/user/login" element={<LoginForm/>}></Route>
-          <Route path="/user/signup" element={<SignUpForm/>}></Route>
-          <Route path="/user/edit" element={<EditUserForm/>}></Route>
+          <Route path="/user/login" element={<><LoginForm/></>}></Route>
+          <Route path="/user/signup" element={<><SignUpForm/></>}></Route>
+          <Route path="/user/edit" element={<><EditUserForm/></>}></Route>
           {/* <Route path="" element={}></Route> */}
         </Routes>
       </BrowserRouter>
