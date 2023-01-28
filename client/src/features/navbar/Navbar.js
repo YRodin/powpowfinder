@@ -2,11 +2,13 @@ import React, { useEffect } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+
 
 //apply conditional rendering for sign in/up || sign out links in NavBar
 const NavBar = () => {
+  const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   const navigate = useNavigate();
 
@@ -49,7 +51,7 @@ const NavBar = () => {
             </Nav.Item>
             <Nav.Item>
               {isLoggedIn && (
-                <Nav.Link as={Link} to="/user/logout">
+                <Nav.Link onClick={dispatch({type: "signOut"})} as={Link} to="/">
                   Sign Out
                 </Nav.Link>
               )}

@@ -6,11 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const MainUser = () => {
-
+  const userName = useSelector(state => state.user.userName);
   return (
-    <div>
-      <title>Test Main User Page</title>
-    </div>
+    <h3>Welcome to Powder Finder</h3>
   );
 };
 

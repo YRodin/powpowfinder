@@ -17,7 +17,8 @@ export const signin = createAsyncThunk(
       const response = await axios.post('http://localhost:5001/api/auth/signin', data)
       return response.data;
     } catch(err) {
-      console.log(err);;
+      console.log(err);
+      throw err;
     }
   }
 );
@@ -30,6 +31,7 @@ export const signup = createAsyncThunk(
       return response.data; 
     } catch(err) {
       console.log(err);
+      throw err;
     }
   }
 );
@@ -38,10 +40,15 @@ export const editUser = createAsyncThunk(
     'user/editUser',
     async (data) => {
       try {
-        const response = await axios.put('http://localhost:5001/api/user/updateinfo', data);
+        const headers = {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${data.token}`
+        }
+        const response = await axios.put('http://localhost:5001/api/user/updateinfo', data, { headers });
+        console.log(response);
         return response.data;
       } catch(err) {
-        console.log(err);
+        throw err;
     }
   }
   )
@@ -62,7 +69,11 @@ export const deleteUser = createAsyncThunk(
 export const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+    signOut: () => {
+      return initialState;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(signin.pending, (state) => {
@@ -83,8 +94,12 @@ export const userSlice = createSlice({
       .addCase(editUser.fulfilled, (state, action) => {
         state.isLoggedIn = true;
         state.token = action.payload.token;
-        state.seasonPass = action.payload.seasonPass;
-        state.userName = action.payload.userName
+        state.seasonPass = action.payload.user.seasonPass;
+        state.userName = action.payload.user.userName
+      })
+      .addCase(editUser.rejected, (state) => {
+        console.log(`editUser.rejected redux thunk handler invoked`)
+        return state;
       })
       .addCase(deleteUser.pending, (state) => { state.status = 'loading';})
       .addCase(deleteUser.fulfilled, (state) => {
