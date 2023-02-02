@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 // import * as yup from "yup";
 import Button from "react-bootstrap/Button";
@@ -15,19 +15,21 @@ function SignUpForm(props) {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const isLoggedIn = useSelector(state => state.user.isLoggedIn)
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isLoggedIn } = useSelector((state) => state.user);
+  
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/user");
+    }
+  }, [isLoggedIn]);
+
   const onSubmit = (data) => {
     console.log(data);
     dispatch(signup(data));
-    navigate("/user");
-    // if(isLoggedIn) {
-      
-    // } else {
-    //   console.error("Error Logging In")
-    // }
+    // if user is logged in go to /user
   };
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>

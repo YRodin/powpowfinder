@@ -13,15 +13,16 @@ const EditUserForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { userName, seasonPass, token } = useSelector((state) => state.user);
+  const { userName, token } = useSelector((state) => state.user);
 
   
 
   function onSubmit (data) {
     // dispatch api Put request and save data in redux state
-    const dataAndToken = { ...data, ...token};
+    const dataAndToken = { ...data, token};
     console.log(dataAndToken);
     dispatch(editUser(dataAndToken));
     // redirect to home page
@@ -42,7 +43,7 @@ const EditUserForm = () => {
         <Form.Label>Update Season Pass</Form.Label>
         <Form.Control
           type="text"
-          placeholder={seasonPass}
+          placeholder="Dropdown menu to be built"
           {...register("seasonPass")}
         />
       </Form.Group>

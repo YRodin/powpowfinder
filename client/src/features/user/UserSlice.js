@@ -48,6 +48,7 @@ export const editUser = createAsyncThunk(
         console.log(response);
         return response.data;
       } catch(err) {
+        console.log(err);
         throw err;
     }
   }
@@ -55,9 +56,13 @@ export const editUser = createAsyncThunk(
 
 export const deleteUser = createAsyncThunk(
     'user/deleteUser',
-    async () => {
+    async (token) => {
       try {
-        const response = await axios.delete('http://localhost:5001/api//api/user/delete');
+        const headers = {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+        const response = await axios.delete('http://localhost:5001/api/user/delete', {headers});
         return response.data;
       } catch(err) {
         console.log(err);
@@ -81,21 +86,25 @@ export const userSlice = createSlice({
       })
       .addCase(signin.fulfilled, (state, action) => {
         state.isLoggedIn = true;
-        state.token = action.payload;
+        state.token = action.payload.token;
+        state.seasonPass = action.payload.seasonPass;
+        state.userName = action.payload.userName;
       })
       .addCase(signup.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(signup.fulfilled, (state, action) => {
         state.isLoggedIn = true;
-        state.token = action.payload;
+        state.token = action.payload.token;
+        state.seasonPass = action.payload.seasonPass;
+        state.userName = action.payload.userName;
       })
       .addCase(editUser.pending, (state) => { state.status = 'loading';})
       .addCase(editUser.fulfilled, (state, action) => {
         state.isLoggedIn = true;
         state.token = action.payload.token;
-        state.seasonPass = action.payload.user.seasonPass;
-        state.userName = action.payload.user.userName
+        state.seasonPass = action.payload.seasonPass;
+        state.userName = action.payload.userName
       })
       .addCase(editUser.rejected, (state) => {
         console.log(`editUser.rejected redux thunk handler invoked`)
@@ -108,4 +117,5 @@ export const userSlice = createSlice({
   }
 });
 
+export const { signOut } = userSlice.actions;
 export default userSlice.reducer;

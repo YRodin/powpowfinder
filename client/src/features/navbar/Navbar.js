@@ -4,6 +4,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { signOut } from "../user/UserSlice"
 
 
 //apply conditional rendering for sign in/up || sign out links in NavBar
@@ -16,7 +17,7 @@ const NavBar = () => {
     <div>
       <Navbar bg="dark" variant="dark">
         <Container>
-          <Navbar.Brand as={Link} to='/'>
+          <Navbar.Brand as={Link} to='/user'>
             Powder Finder : GO DEEp OR GO HOMe!
           </Navbar.Brand>
 
@@ -38,7 +39,7 @@ const NavBar = () => {
             <Nav.Item>
               {isLoggedIn && (
                 <Nav.Link as={Link} to="/user/edit">
-                  Edit User/Add Ski Pass
+                  User Settings
                 </Nav.Link>
               )}
             </Nav.Item>
@@ -51,7 +52,7 @@ const NavBar = () => {
             </Nav.Item>
             <Nav.Item>
               {isLoggedIn && (
-                <Nav.Link onClick={dispatch({type: "signOut"})} as={Link} to="/">
+                <Nav.Link onClick={dispatch(signOut)} as={Link} to="/user">
                   Sign Out
                 </Nav.Link>
               )}

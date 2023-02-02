@@ -13,19 +13,26 @@ const LoginForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  // const [ user, setUser ] = useState();
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {isLoggedIn, userName} = useSelector((state) => state.user);
+  const {isLoggedIn} = useSelector((state) => state.user);
 
+  // if user is logged in go to /user
   useEffect(() => {
     if(isLoggedIn) {
       navigate('/user');
     }
   }, [isLoggedIn]);
+
+  const [errorMessage, setErrorMessage] = useState(null);
   
   const onSubmit = function (data){
-    dispatch(signin(data));   
+    const apiRes = dispatch(signin(data));
+    console.log(apiRes);
+    if (apiRes.type === 'user/signin/rejected') {
+      setErrorMessage('incorrect userNAme or Pass');
+    }
   };
 
   return (
@@ -48,6 +55,7 @@ const LoginForm = () => {
           {...register("password", { required: "Required" })}
         />
         {errors.password && <p>This field is required</p>}
+        {errorMessage && <p>{errorMessage}</p>}
       </Form.Group>
 
       <Button variant="primary" type="submit">
