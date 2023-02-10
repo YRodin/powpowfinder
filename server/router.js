@@ -1,5 +1,6 @@
 const authentication = require('./controllers/authentication');
-const manageUser = require('./controllers/manageUser')
+const manageUser = require('./controllers/manageUser');
+const dataCollection = require('./controllers/dataCollection');
 const passportService = require('./services/passport');
 const passport = require('passport');
 
@@ -13,4 +14,5 @@ module.exports = function(app) {
   app.post('/api/user/addpass', requireAuth, manageUser.addPass);
   app.put('/api/user/updateinfo', requireAuth, manageUser.updateInfo);
   app.delete('/api/user/delete', requireAuth, manageUser.delete);
+  app.get('/api/getpassinfo', dataCollection.getPassInfo);
 };

@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^14.4.3",
     "axios": "^1.2.2",
     "bootstrap": "^5.2.3",
+    "cheerio": "^1.0.0-rc.12",
     "normalizr": "^3.6.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.0",

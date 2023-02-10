@@ -23,3 +23,28 @@ chatGpt.js
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+../thoughtsAndPrayers.txt
+../thoughtsAndPrayers.txt
+
+../server/node_modules/asynckit/
+../server/node_modules/axios/
+../server/node_modules/boolbase/
+        ../server/node_modules/cheerio-select/
+        ../server/node_modules/cheerio/
+        ../server/node_modules/combined-stream/
+        ../server/node_modules/css-select/
+        ../server/node_modules/css-what/
+        ../server/node_modules/delayed-stream/
+        ../server/node_modules/dom-serializer/
+        ../server/node_modules/domelementtype/
+        ../server/node_modules/domhandler/
+        ../server/node_modules/domutils/
+        ../server/node_modules/entities/
+        ../server/node_modules/follow-redirects/
+        ../server/node_modules/form-data/
+        ../server/node_modules/htmlparser2/
+        ../server/node_modules/nth-check/
+        ../server/node_modules/parse5-htmlparser2-tree-adapter/
+        ../server/node_modules/parse5/
+        ../server/node_modules/proxy-from-env/
