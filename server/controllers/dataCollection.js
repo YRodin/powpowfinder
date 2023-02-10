@@ -8,7 +8,7 @@ exports.getPassInfo = async function (req, res, next) {
     epic: "https://epicorikon.com/",
     ikon: "https://epicorikon.com/",
     mountainCollective: "https://mountaincollective.com/",
-    indy: "https://www.indyskipass.com/indy-pass-resort-map/", //indy requires traversing further down dom tree to grab data
+    indy: "https://www.indyskipass.com/resorts/", //indy requires traversing further down dom tree to grab data
   };
 
   const passesAndPeaks = {};
@@ -52,22 +52,37 @@ exports.getPassInfo = async function (req, res, next) {
     const response = await axios.get(passUrls.mountainCollective);
     const $ = cheerio.load(response.data);
     const ul = $(".resort-list").find("ul");
-    
-    ul.each((index, element) => {
-      const liHtml = $(element).text();
-      const formattedLiHtml = liHtml
-        .replace(/\n|\t|\*|NEW!|SkiBig3/g, "") 
-        .replace(/—|-\s|/g, "");
-     
-      peaksMountainCollective.push(formattedLiHtml);
+    $("#accordionunited-states .card").each((i, element) => {
+      let peakName = $(element).find("span").text();
+      peakName = peakName.replace(/\s*\|.*/, "");
+      peakName = peakName.replace(/^\s*NEW!\s*/, "");
+      peaksMountainCollective.push(peakName);
     });
-
     passesAndPeaks.mountainCollective = peaksMountainCollective;
-
-    console.log(`this is peaksMC ${passesAndPeaks.mountainCollective}`);
   } catch (err) {
     console.log(err.message);
   }
+  // get list of mouintains accessible to "Indy" season pass holders
+  try { 
+    const peaksIndy = [];
+    const regionUrls = ['west-region', 'rockies-region', 'midwest-region', 'east-region', 'mid-atlantic-region'];
+    // complete axios get request for each link and save names of peaks in the array passesAndPeaks.indy = peaksIndy;
+    for (const regionUrl in regionUrls) {
+      const response = await axios.get(passUrls.indy + regionUrl);
+      const $ = cheerio.load(response.data);
+      
+      $('.clearfix').each((i, element) => {
+        console.log(`card.each is invoked!`);
+        let peakName = $(element).find('h3, h4').text();
+        console.log(peakName);
+        peaksIndy.push(peakName);
+      })
+    }
+    passesAndPeaks.indy = peaksIndy;
+  } catch (err) {
+    console.log(err.message);
+  }
+ 
   res.json(passesAndPeaks);
 };
 
