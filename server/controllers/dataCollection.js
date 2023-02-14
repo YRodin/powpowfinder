@@ -12,7 +12,7 @@ exports.getPassInfo = async function (req, res, next) {
   };
 
   const passesAndPeaks = {};
-  // get list of mouintains accessible to "Epic" seaoason pass holders
+  //get list of mouintains accessible to "Epic" seaoason pass holders
   try {
     const peaksEpic = [];
     const response = await axios.get(passUrls.epic);
@@ -62,27 +62,42 @@ exports.getPassInfo = async function (req, res, next) {
   } catch (err) {
     console.log(err.message);
   }
-  // get list of mouintains accessible to "Indy" season pass holders
-  try { 
-    const peaksIndy = [];
-    const regionUrls = ['west-region', 'rockies-region', 'midwest-region', 'east-region', 'mid-atlantic-region'];
+  //get list of mouintains accessible to "Indy" season pass holders
+  try {
+    const regionUrls = [
+      "west-region",
+      "rockies-region",
+      "midwest-region",
+      "east-region",
+      "mid-atlantic-region",
+    ];
     // complete axios get request for each link and save names of peaks in the array passesAndPeaks.indy = peaksIndy;
-    for (const regionUrl in regionUrls) {
+    const resortNames = [];
+    const resortLocations = [];
+    for (const regionUrl of regionUrls) {
       const response = await axios.get(passUrls.indy + regionUrl);
       const $ = cheerio.load(response.data);
-      
-      $('.clearfix').each((i, element) => {
-        console.log(`card.each is invoked!`);
-        let peakName = $(element).find('h3, h4').text();
-        console.log(peakName);
-        peaksIndy.push(peakName);
-      })
+      $(".resort_list").each((i, element) => {
+        const $h3 = $(element).find("h3");
+        const $h4 = $(element).find("h4");
+        $h3.each((i, e) => {
+          const $e = $(e);
+          resortNames.push($e.text().replace(/\s+$/, ""));
+        });
+        $h4.each((i, e) => {
+          const $e = $(e);
+          resortLocations.push($e.text());
+        });
+      });
     }
+    //combine resort names with corresponding locations
+    const peaksIndy = resortNames.map(
+      (value, index) => value + ", " + resortLocations[index]
+    );
     passesAndPeaks.indy = peaksIndy;
   } catch (err) {
     console.log(err.message);
   }
- 
   res.json(passesAndPeaks);
 };
 
