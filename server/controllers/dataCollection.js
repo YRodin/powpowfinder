@@ -1,5 +1,5 @@
 const authentication = require("./authentication");
-const WeatherNPassInfo = require("../models/weatherNPassInfo");
+const PassNPeaks = require("../models/PassNPeaks");
 const axios = require("axios");
 const cheerio = require("cheerio");
 exports.getPassInfo = async function (req, res, next) {
@@ -10,7 +10,6 @@ exports.getPassInfo = async function (req, res, next) {
     mountainCollective: "https://mountaincollective.com/",
     indy: "https://www.indyskipass.com/resorts/", //indy requires traversing further down dom tree to grab data
   };
-
   const passesAndPeaks = {};
   //get list of mouintains accessible to "Epic" seaoason pass holders
   try {
@@ -95,8 +94,16 @@ exports.getPassInfo = async function (req, res, next) {
       (value, index) => value + ", " + resortLocations[index]
     );
     passesAndPeaks.indy = peaksIndy;
+    
   } catch (err) {
     console.log(err.message);
+  }
+  for (const peak in passesAndPeaks){
+    const passAndPeak = new PassNPeaks({
+      passName: peak,
+      resortAccessList: passesAndPeaks[peak]
+    });
+    passAndPeak.save();
   }
   res.json(passesAndPeaks);
 };
