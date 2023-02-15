@@ -1,7 +1,9 @@
 const authentication = require("./authentication");
-const PassNPeaks = require("../models/PassNPeaks");
+const PassInfoModel = require("../models/passInfo");
 const axios = require("axios");
 const cheerio = require("cheerio");
+const ResortInfoModel = require("../models/resortInfo");
+
 exports.getPassInfo = async function (req, res, next) {
   // axios call for html about season-pass-mountain-access data
   const passUrls = {
@@ -20,9 +22,9 @@ exports.getPassInfo = async function (req, res, next) {
 
     ul.each((index, element) => {
       const button = $(element).find("button");
-      const formattedResortName = button.html().replace(/<!-- -->/g, "");
-      // html().replace('<!-- -->', '');
-      peaksEpic.push(formattedResortName);
+      let peakName = button.html().replace(/<!-- -->/g, "");
+      peakName = peakName.split(", ");
+      peaksEpic.push({city: peakName[0], state: peakName[1]});
     });
     passesAndPeaks.epic = peaksEpic;
   } catch (err) {
@@ -37,9 +39,10 @@ exports.getPassInfo = async function (req, res, next) {
 
     ul.each((index, element) => {
       const button = $(element).find("button");
-      const formattedResortName = button.html().replace(/<!-- -->/g, "");
-      // html().replace('<!-- -->', '');
-      peaksIkon.push(formattedResortName);
+      let peakName = button.html().replace(/<!-- -->/g, "");
+      peakName = peakName.split(", ");
+      peaksIkon.push({city: peakName[0], state: peakName[1]});
+     
     });
     passesAndPeaks.ikon = peaksIkon;
   } catch (err) {
@@ -55,7 +58,8 @@ exports.getPassInfo = async function (req, res, next) {
       let peakName = $(element).find("span").text();
       peakName = peakName.replace(/\s*\|.*/, "");
       peakName = peakName.replace(/^\s*NEW!\s*/, "");
-      peaksMountainCollective.push(peakName);
+      peakName = peakName.split(", ");
+      peaksMountainCollective.push({city: peakName[0], state: peakName[1]});
     });
     passesAndPeaks.mountainCollective = peaksMountainCollective;
   } catch (err) {
@@ -72,42 +76,68 @@ exports.getPassInfo = async function (req, res, next) {
     ];
     // complete axios get request for each link and save names of peaks in the array passesAndPeaks.indy = peaksIndy;
     const resortNames = [];
-    const resortLocations = [];
+    const peaksIndy = [];
     for (const regionUrl of regionUrls) {
       const response = await axios.get(passUrls.indy + regionUrl);
       const $ = cheerio.load(response.data);
       $(".resort_list").each((i, element) => {
         const $h3 = $(element).find("h3");
         const $h4 = $(element).find("h4");
-        $h3.each((i, e) => {
-          const $e = $(e);
-          resortNames.push($e.text().replace(/\s+$/, ""));
-        });
+        // $h3.each((i, e) => {
+        //   const $e = $(e);
+        //   resortNames.push($e.text().replace(/\s+$/, ""));
+        // });
         $h4.each((i, e) => {
           const $e = $(e);
-          resortLocations.push($e.text());
+          let cityNState = $e.text();
+          cityNState = cityNState.split(", ");
+          peaksIndy.push({city: cityNState[0],state: cityNState[1]
+          });
         });
       });
     }
     //combine resort names with corresponding locations
-    const peaksIndy = resortNames.map(
-      (value, index) => value + ", " + resortLocations[index]
-    );
+    // const peaksIndy = resortNames.map(
+    //   (value, index) => value + ", " + peaksIndy[index]
+    // );
     passesAndPeaks.indy = peaksIndy;
     
   } catch (err) {
     console.log(err.message);
   }
+  // iterate over passesAndPeaks array and save in db
   for (const peak in passesAndPeaks){
-    const passAndPeak = new PassNPeaks({
+    //create new PassInfoModel for every pass key in {passesAndPeaks}
+    const passInfo = new PassInfoModel({
       passName: peak,
-      resortAccessList: passesAndPeaks[peak]
     });
-    passAndPeak.save();
+    passInfo.save((err, savedPass) => {
+      //on successful save create a resortInfo model for each location in [pass]: array
+      if(err) {next(err)};
+      passesAndPeaks[peak].forEach((location) => {
+        console.log(`passesAndPeaks[peak].forEach invoked with ${location.city} and ${location.state}`);
+        const resortInfo = new ResortInfoModel({
+          city: location.city,
+          state: location.state,
+        })
+        
+        console.log(`this is ${resortInfo}`);
+        resortInfo.save((err, savedResortInfo) => {
+          if(err) { next(err);}
+          else {
+            savedResortInfo.pass.push(savedPass._id);
+            savedResortInfo.save();
+            PassInfoModel.findById(savedResortInfo.pass[0], (err, successPassInfoModel) => {
+            if(err) { next(err); } else 
+            {successPassInfoModel.resortAccessList.push(savedResortInfo._id);
+              successPassInfoModel.save();
+            }
+          })
+          }
+        })
+      })
+    });
   }
+  //send response for analysis
   res.json(passesAndPeaks);
 };
-
-// TODO:
-// get mountainList for each pass
-// save all mountain lists as obj props with data as array of strings
