@@ -15,4 +15,5 @@ module.exports = function(app) {
   app.put('/api/user/updateinfo', requireAuth, manageUser.updateInfo);
   app.delete('/api/user/delete', requireAuth, manageUser.delete);
   app.get('/api/getpassinfo', dataCollection.getPassInfo);
+  app.get('/api/getResortCoordinates', dataCollection.getResortCoordinates);
 };

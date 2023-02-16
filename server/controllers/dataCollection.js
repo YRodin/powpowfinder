@@ -24,7 +24,7 @@ exports.getPassInfo = async function (req, res, next) {
       const button = $(element).find("button");
       let peakName = button.html().replace(/<!-- -->/g, "");
       peakName = peakName.split(", ");
-      peaksEpic.push({city: peakName[0], state: peakName[1]});
+      peaksEpic.push({ city: peakName[0], state: peakName[1] });
     });
     passesAndPeaks.epic = peaksEpic;
   } catch (err) {
@@ -41,8 +41,7 @@ exports.getPassInfo = async function (req, res, next) {
       const button = $(element).find("button");
       let peakName = button.html().replace(/<!-- -->/g, "");
       peakName = peakName.split(", ");
-      peaksIkon.push({city: peakName[0], state: peakName[1]});
-     
+      peaksIkon.push({ city: peakName[0], state: peakName[1] });
     });
     passesAndPeaks.ikon = peaksIkon;
   } catch (err) {
@@ -59,7 +58,7 @@ exports.getPassInfo = async function (req, res, next) {
       peakName = peakName.replace(/\s*\|.*/, "");
       peakName = peakName.replace(/^\s*NEW!\s*/, "");
       peakName = peakName.split(", ");
-      peaksMountainCollective.push({city: peakName[0], state: peakName[1]});
+      peaksMountainCollective.push({ city: peakName[0], state: peakName[1] });
     });
     passesAndPeaks.mountainCollective = peaksMountainCollective;
   } catch (err) {
@@ -83,61 +82,77 @@ exports.getPassInfo = async function (req, res, next) {
       $(".resort_list").each((i, element) => {
         const $h3 = $(element).find("h3");
         const $h4 = $(element).find("h4");
-        // $h3.each((i, e) => {
-        //   const $e = $(e);
-        //   resortNames.push($e.text().replace(/\s+$/, ""));
-        // });
         $h4.each((i, e) => {
           const $e = $(e);
           let cityNState = $e.text();
           cityNState = cityNState.split(", ");
-          peaksIndy.push({city: cityNState[0],state: cityNState[1]
-          });
+          peaksIndy.push({ city: cityNState[0], state: cityNState[1] });
         });
       });
     }
-    //combine resort names with corresponding locations
-    // const peaksIndy = resortNames.map(
-    //   (value, index) => value + ", " + peaksIndy[index]
-    // );
     passesAndPeaks.indy = peaksIndy;
-    
   } catch (err) {
     console.log(err.message);
   }
   // iterate over passesAndPeaks array and save in db
-  for (const peak in passesAndPeaks){
+  for (const peak in passesAndPeaks) {
     //create new PassInfoModel for every pass key in {passesAndPeaks}
     const passInfo = new PassInfoModel({
       passName: peak,
     });
     passInfo.save((err, savedPass) => {
       //on successful save create a resortInfo model for each location in [pass]: array
-      if(err) {next(err)};
+      if (err) {
+        next(err);
+      }
       passesAndPeaks[peak].forEach((location) => {
-        console.log(`passesAndPeaks[peak].forEach invoked with ${location.city} and ${location.state}`);
+        console.log(
+          `passesAndPeaks[peak].forEach invoked with ${location.city} and ${location.state}`
+        );
         const resortInfo = new ResortInfoModel({
           city: location.city,
           state: location.state,
-        })
-        
-        console.log(`this is ${resortInfo}`);
+        });
+
         resortInfo.save((err, savedResortInfo) => {
-          if(err) { next(err);}
-          else {
+          if (err) {
+            next(err);
+          } else {
             savedResortInfo.pass.push(savedPass._id);
             savedResortInfo.save();
-            PassInfoModel.findById(savedResortInfo.pass[0], (err, successPassInfoModel) => {
-            if(err) { next(err); } else 
-            {successPassInfoModel.resortAccessList.push(savedResortInfo._id);
-              successPassInfoModel.save();
-            }
-          })
+            PassInfoModel.findById(
+              savedResortInfo.pass[0],
+              (err, successPassInfoModel) => {
+                if (err) {
+                  next(err);
+                } else {
+                  successPassInfoModel.resortAccessList.push(
+                    savedResortInfo._id
+                  );
+                  successPassInfoModel.save();
+                }
+              }
+            );
           }
-        })
-      })
+        });
+      });
     });
   }
   //send response for analysis
   res.json(passesAndPeaks);
+};
+
+exports.getResortCoordinates = async function (req, res, next) {
+  ResortInfoModel.find({})
+    .limit(5)
+    .exec((err, successResInfo) => {
+      if (err) {
+        next(err);
+      } else {
+        const test = [];
+        successResInfo.forEach((resortInfo) => {
+          resortInfo.getCoordinates();
+        });
+      }
+    });
 };
