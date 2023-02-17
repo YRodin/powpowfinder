@@ -144,7 +144,7 @@ exports.getPassInfo = async function (req, res, next) {
 
 exports.getResortCoordinates = async function (req, res, next) {
   ResortInfoModel.find({})
-    .limit(5)
+    // .limit(10)
     .exec((err, successResInfo) => {
       if (err) {
         next(err);
@@ -153,6 +153,7 @@ exports.getResortCoordinates = async function (req, res, next) {
         successResInfo.forEach((resortInfo) => {
           resortInfo.getCoordinates();
         });
+        res.send('test');
       }
     });
 };

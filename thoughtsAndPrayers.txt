@@ -1,5 +1,79 @@
-- debug api/user/updateinfo manageuser.js controller
-: upodate pass in .update
-- protected routes must always check for a JWT (jwtLogin passport.js) on the request obj and send response with an updated JWT so that it stays fresh
-- Client: save JWT in Redux State (JWT: AuthHeaderAsBearerToken) and always include in requests to api endpoints. 
-- ! app is documented for https but is using http protocol, double check
+
+  Current Issue: 
+ get coordinates is able to get coordinates for 134 out of 166 resorts with openWeather Api; 
+ for about 30 resorts 
+  - get coorditnates for each resort in pass db and save in 
+  - use zip codes for GeoCoding api to grab coordinates for weather search
+  - build controller for weather search
+  - save weather api data in DB
+  
+    server: 
+      - build an endpoint that will contain data extraction logic and save the resulting data it in the DB
+      sources of data collection: weatherApi, cheerio, 
+  
+
+
+
+
+  based on the selected season pass option, user selected location, and radius, api should  fetch data for relevant ski resorts only;
+  cache data results in database;
+
+
+
+  sign in and sign up should account for edge cases, such as 404, 401 api responses, etc.
+
+  Sign In/Up elements should render conditionally depending on request success/failure. Currently navidate('/home) on all;
+  - 
+Main goal: 
+  - Focus on building functional front end routes
+  - Learn integration and set up of external API's
+  - Adjust server and client to the functinality added by openWeatherApi, googleMaps, dataScraper
+List of UI components to build :
+
+  1. Implement existing Components, Debug; add  and implement missing components: Home,  Map & list.  
+  2. Google maps with pins (make it occupy  entire viewport width )
+  3. Search results table (hovers above and over map)
+  4. Snow search component (hovers above and  over  map)
+
+NOTES:
+  Here are some popular free ski conditions weather     APIs:
+      OpenWeatherMap API
+      Weather Underground API
+      AccuWeather API
+      WeatherBit API
+      Dark Sky API
+      Weather API by Climacell
+      MetaWeather API
+      World Weather Online API
+      Weather API by Apixu
+  
+  Sites to scrape data from:
+    https://www.skiresort.info/ski-resorts/usa/, Ski.com, OnTheSnow.com
+
+  USA, states by geo zones: 
+    East Coast: Main, New Hampshire, Vermont, Massachusetts Rhode Island, Connecticut, New York, New Jersey, Pennsylvania, Maryland, Delaware, Virginia, West Virginia, North Carolina, South Carolina, Georgia, Florida;
+    Midwest: Montana Idaho, Wyoming, South Dakota, North Dakota, Nebraska, Kansas, Oklahoma, Texas, Minnesota, Iowa, Missouri, Arkansas, Louisiana, Wisconsin, Illinois, Michigan, Indiana, Ohio, Kentucky, Tennessee;
+    Weast Coast: Washington, Oregon, California;
+
+ .clearfix DOM structure:
+  
+  <div className="resort_list">
+  // nested arrays of same className divs with identical structure and class names of clearfix:
+  <div className="clearfix">
+    <div>1</div>
+    <div>2</div>
+    <div>3
+      <div>1</div>
+      <div>2</div>
+      <div className="resort-info"> 3
+        <a>
+          <h3></h3>
+          <h4></h4>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>;
+
+
+Sample Google Geo Coding Api Request url: https://maps.googleapis.com/maps/api/geocode/json?address=White+Pass,+WA&key=AIzaSyB5Wfp8NsPbxSdKfamg5r5kZE4RhjeiwKs
