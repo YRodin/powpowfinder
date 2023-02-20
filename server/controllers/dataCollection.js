@@ -106,9 +106,6 @@ exports.getPassInfo = async function (req, res, next) {
         next(err);
       }
       passesAndPeaks[peak].forEach((location) => {
-        console.log(
-          `passesAndPeaks[peak].forEach invoked with ${location.city} and ${location.state}`
-        );
         const resortInfo = new ResortInfoModel({
           city: location.city,
           state: location.state,
@@ -147,7 +144,7 @@ exports.getResortCoordinates = async function (req, res, next) {
     // .limit(10)
     .exec((err, successResInfo) => {
       if (err) {
-        next(err);
+        console.log(err);
       } else {
         const test = [];
         successResInfo.forEach((resortInfo) => {
@@ -157,3 +154,19 @@ exports.getResortCoordinates = async function (req, res, next) {
       }
     });
 };
+
+exports.getResortPlaceId = async function ( req, res, next) {
+  ResortInfoModel.find({})
+  // .limit(1)
+  .exec((err, successResInfo) => {
+    if (err) {
+      next(err);
+    } else {
+      successResInfo.forEach((resortInfo) => {
+        resortInfo.getPlace_id();
+      })
+      res.send('test');
+    }
+  })
+}
+

@@ -2,15 +2,17 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const axios = require("axios");
 const keys = require("../config/keys.js");
+const { Client } = require("@googlemaps/google-maps-services-js");
 
 const ResortInfoSchema = new Schema({
   city: String,
   state: String,
+  place_id: String,
   coordinates: { lat: Number, lon: Number },
   pass: [{ type: Schema.Types.ObjectId, ref: "passinfo" }],
 });
 
-//geocode and save each resort
+//geocode and save each resorts geo coordinates
 ResortInfoSchema.methods.getCoordinates = async function (req, res, next) {
   try {
     const response = await axios.get(
@@ -38,6 +40,31 @@ ResortInfoSchema.methods.getCoordinates = async function (req, res, next) {
     }
   } catch (err) {
     next(err);
+  }
+};
+
+
+ResortInfoSchema.methods.getPlace_id = async function (req, res, next) {
+  const client = new Client({});
+  const request = {
+    params: {
+      input: `${this.city}, ${this.state}`,
+      fields: ["place_id"],
+      key: keys.GOOGLE_API_KEY
+    },
+  };
+  try {
+    const response = await client.placeAutocomplete(request);
+    this.place_id = response.data.predictions[0].place_id;
+    this.save((err, updatedResortInfo) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(updatedResortInfo.place_id);
+      }
+    });
+  } catch (err) {
+    console.log(err);
   }
 };
 
