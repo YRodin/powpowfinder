@@ -13,7 +13,7 @@ exports.getPassInfo = async function (req, res, next) {
     indy: "https://www.indyskipass.com/resorts/", //indy requires traversing further down dom tree to grab data
   };
   const passesAndPeaks = {};
-  //get list of mouintains accessible to "Epic" seaoason pass holders
+  //get list of mouintains accessible to "Epic" season pass holders
   try {
     const peaksEpic = [];
     const response = await axios.get(passUrls.epic);
@@ -22,15 +22,17 @@ exports.getPassInfo = async function (req, res, next) {
 
     ul.each((index, element) => {
       const button = $(element).find("button");
-      let peakName = button.html().replace(/<!-- -->/g, "");
-      peakName = peakName.split(", ");
-      peaksEpic.push({ city: peakName[0], state: peakName[1] });
+      let cityNState = button.text().replace(/<!-- -->/g, "");
+      cityNState = cityNState.split(", ");
+      let city = cityNState[0].trim();
+      let formattedState = cityNState[1].trim().slice(0, 2);
+      peaksEpic.push({ city:city, state: formattedState });
     });
     passesAndPeaks.epic = peaksEpic;
   } catch (err) {
     console.log(err.message);
   }
-  // get list of mouintains accessible to "Epic" seaoason pass holders
+  // get list of mouintains accessible to "Ikon" season pass holders
   try {
     const peaksIkon = [];
     const response = await axios.get(passUrls.ikon);
@@ -39,9 +41,11 @@ exports.getPassInfo = async function (req, res, next) {
 
     ul.each((index, element) => {
       const button = $(element).find("button");
-      let peakName = button.html().replace(/<!-- -->/g, "");
-      peakName = peakName.split(", ");
-      peaksIkon.push({ city: peakName[0], state: peakName[1] });
+      let cityNState = button.html().replace(/<!-- -->/g, "");
+      cityNState = cityNState.split(", ");
+      let city = cityNState[0].trim();
+      let formattedState = cityNState[1].trim().slice(0, 2);
+      peaksIkon.push({ city:city, state: formattedState });
     });
     passesAndPeaks.ikon = peaksIkon;
   } catch (err) {
@@ -54,11 +58,13 @@ exports.getPassInfo = async function (req, res, next) {
     const $ = cheerio.load(response.data);
     const ul = $(".resort-list").find("ul");
     $("#accordionunited-states .card").each((i, element) => {
-      let peakName = $(element).find("span").text();
-      peakName = peakName.replace(/\s*\|.*/, "");
-      peakName = peakName.replace(/^\s*NEW!\s*/, "");
-      peakName = peakName.split(", ");
-      peaksMountainCollective.push({ city: peakName[0], state: peakName[1] });
+      let cityNState = $(element).find("span").text();
+      cityNState = cityNState.replace(/\s*\|.*/, "");
+      cityNState = cityNState.replace(/^\s*NEW!\s*/, "");
+      cityNState = cityNState.split(", ");
+      let city = cityNState[0].trim();
+      let formattedState = cityNState[1].trim().slice(0, 2);
+      peaksMountainCollective.push({ city: city, state: formattedState });
     });
     passesAndPeaks.mountainCollective = peaksMountainCollective;
   } catch (err) {
@@ -84,9 +90,13 @@ exports.getPassInfo = async function (req, res, next) {
         const $h4 = $(element).find("h4");
         $h4.each((i, e) => {
           const $e = $(e);
-          let cityNState = $e.text();
-          cityNState = cityNState.split(", ");
-          peaksIndy.push({ city: cityNState[0], state: cityNState[1] });
+          const cityNState = $e.text();
+          const cityNStateArry = cityNState.split(", ");
+          const city = cityNStateArry[0];
+          const state = cityNStateArry[1];
+          const cityTxtFuzzy = decodeURIComponent(city);
+          const stateTxt = decodeURIComponent(state);
+          peaksIndy.push({ city: cityTxtFuzzy, state: stateTxt });
         });
       });
     }
@@ -156,17 +166,26 @@ exports.getResortCoordinates = async function (req, res, next) {
 };
 
 exports.getResortPlaceId = async function ( req, res, next) {
-  ResortInfoModel.find({})
-  // .limit(1)
+  ResortInfoModel.find({ place_id: { $exists: false } })
   .exec((err, successResInfo) => {
     if (err) {
       next(err);
     } else {
-      successResInfo.forEach((resortInfo) => {
-        resortInfo.getPlace_id();
-      })
-      res.send('test');
+      let i = 0;
+      const length = successResInfo.length;
+      const getNextPlaceId = () => {
+        if (i < length) {
+          setTimeout(() => {
+            successResInfo[i].getPlace_id();
+            i++;
+            getNextPlaceId();
+          }, 1000);
+        } else {
+          res.send('test');
+        }
+      };
+      getNextPlaceId();
     }
-  })
+  });
 }
 

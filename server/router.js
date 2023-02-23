@@ -1,9 +1,9 @@
 const authentication = require('./controllers/authentication');
 const manageUser = require('./controllers/manageUser');
 const dataCollection = require('./controllers/dataCollection');
-const passportService = require('./services/passport');
 const passport = require('passport');
 const ResortInfo = require('./models/resortInfo');
+const { resortFinder } = require('./controllers/resortFinder');
 
 const requireAuth =  passport.authenticate('jwt', { session: false });
 const requireSignin = passport.authenticate('local', { session: false });
@@ -18,4 +18,5 @@ module.exports = function(app) {
   app.get('/api/getpassinfo', dataCollection.getPassInfo);
   app.get('/api/getresortcoordinates', dataCollection.getResortCoordinates);
   app.post('/api/getresortplaceid', dataCollection.getResortPlaceId);
+  app.post('/api/resortfinder', resortFinder); // add requireAuth when finished testing
 };

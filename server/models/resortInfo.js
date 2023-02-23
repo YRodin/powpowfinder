@@ -39,12 +39,12 @@ ResortInfoSchema.methods.getCoordinates = async function (req, res, next) {
       });
     }
   } catch (err) {
-    next(err);
+    console.log(err);
   }
 };
 
 
-ResortInfoSchema.methods.getPlace_id = async function (req, res, next) {
+ResortInfoSchema.methods.getPlace_id = async function () {
   const client = new Client({});
   const request = {
     params: {
@@ -55,14 +55,8 @@ ResortInfoSchema.methods.getPlace_id = async function (req, res, next) {
   };
   try {
     const response = await client.placeAutocomplete(request);
-    this.place_id = response.data.predictions[0].place_id;
-    this.save((err, updatedResortInfo) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(updatedResortInfo.place_id);
-      }
-    });
+    this.place_id = response?.data?.predictions[0]?.place_id;
+    this.save();
   } catch (err) {
     console.log(err);
   }

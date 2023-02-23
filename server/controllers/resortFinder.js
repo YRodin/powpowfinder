@@ -1,17 +1,34 @@
-const google = require('@google/maps');
+const google = require('@googlemaps/google-maps-services-js');
 const User = require('../models/user');
 const ResortInfo = require('../models/resortInfo');
 const keys = require("../config/dev");
-const { map } = require('cheerio/lib/api/traversing');
+
 
 exports.resortFinder = async(req, res, next) => {
-  const placesService = new google.maps.places.PlacesService(map);
+  const client = new Client({});
+  //make initial request for location
+  const location = { latitude: req.body.coordinates.lat, longitude: req.body.coordinates.lon}
   const request = {
-    query: req.body.query,
-    fields: ['name', 'geometry'],
-    location: ',',
-    radius: req.body.radius 
+    params: 
+    {
+      location,
+      type: 'lodging',
+      lodging_subtype: 'snow_ski',
+      language: 'en',
+      region: 'us',
+      radius: req.body.radius,
+      fields: ['name', 'geometry'],
+      key: keys.GOOGLE_API_KEY,
+    }
+  };
+  const response4UserSelection = {}; 
+  try {
+    response4UserSelection = await client.placesNearby(request);
+    console.log(response4UserSelection.data);
+  } catch (err) {
+    console.log(err);
   }
+  res.send('test');
 }
 /*
 
@@ -25,3 +42,6 @@ Todo:
 4. write some logic that creates a "Gnar Score" for each resort;
 5. display result as a map and a list of resorts;
 */
+
+
+// example of using @googlemaps/google-maps-services-js for a request for ski resorts in specified radius and previously saved coordinates
