@@ -45,7 +45,6 @@ ResortInfoSchema.methods.getCoordinates = async function (req, res, next) {
 
 
 ResortInfoSchema.methods.getPlace_id = async function () {
-  const client = new Client({});
   const request = {
     params: {
       input: `${this.city}, ${this.state}`,
@@ -61,6 +60,27 @@ ResortInfoSchema.methods.getPlace_id = async function () {
     console.log(err);
   }
 };
-
+ResortInfoSchema.methods.getPlace_idNearby = async function () {
+  const client = new Client({});
+  const location = { latitude: this.coordinates.lat, longitude: this.coordinates.lon };
+  const request = {
+    params: {
+      location,
+      radius: 10000,
+      keword: 'ski resort',
+      key: keys.GOOGLE_API_KEY,
+      type: [
+        'tourist_attraction',
+        'lodging',
+        'point_of_interest',
+        'establishment'
+      ]
+    },
+  };
+  const response = await client.placesNearby(request);
+  this.place_id = response?.data?.results[0]?.place_id;
+  console.log(`this is updated placeId: ${response?.data?.results[0]?.place_id}`)
+  this.save();
+}
 const ResortInfoModel = mongoose.model("resortinfo", ResortInfoSchema);
 module.exports = ResortInfoModel;

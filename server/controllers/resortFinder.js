@@ -7,6 +7,9 @@ const axios = require("axios");
 exports.resortFinder = async (req, res, next) => {
   const client = new Client({});
   const location = { latitude: "", longitude: "" };
+  const matchingPassIds = [];
+  const userSearchResultPlaceIds = [];
+  const userPassIds = [];
   // make initial request for location coordinates
   try {
     const response4UserSelection = await axios.get(
@@ -24,12 +27,16 @@ exports.resortFinder = async (req, res, next) => {
     params: {
       location,
       radius: req.body.radius,
-      fields: ["name", "geometry"],
       keyword: "ski resort",
       key: keys.GOOGLE_API_KEY,
+      type: [
+        'tourist_attraction',
+        'lodging',
+        'point_of_interest',
+        'establishment'
+      ]
     },
   };
-  const userSearchResultPlaceIds = [];
   try {
     const userSearchResults = await client.placesNearby(request);
     userSearchResults.data.results.forEach((skiResort) => {
@@ -39,31 +46,35 @@ exports.resortFinder = async (req, res, next) => {
     console.log(err);
   }
   // retreive ids of ski resorts available to user with their pass.
-  const userPassIds = [];
-  PassInfo.findOne({ passName: req.body.passName })
-    .populate({
-      path: "resortAccessList",
-      select: "place_id -_id",
-    })
-    .exec((err, pass) => {
-      if (err) {
-        next(err);
-      } else {
-        pass.resortAccessList.forEach((resort) => {
-          userPassIds.push(resort.place_id);
-        });
-      }
+  try {
+    const pass = await PassInfo.findOne({ passName: req.body.passName })
+      .populate({
+        path: "resortAccessList",
+        select: "place_id",
+      })
+      .exec();
+    pass.resortAccessList.forEach((resort) => {
+      userPassIds.push({place_id: resort.place_id});
     });
+    findMatchingIds();
+  } catch (err) {
+    console.log(err);
+  }
   // compare search results to user selected ski pass and make weather requests for matching locations
-  const matchingPassIds = [];
-  for (let i = 0; i < userPassIds.length, i++; ) {
-    for (let m = 0; m < userSearchResultPlaceIds.length; m++) {
-      if (userPassIds[i] === userSearchResultPlaceIds[m]) {
-        matchingPassIds.push(userSearchResultPlaceIds[m]);
+  function findMatchingIds () {
+    // console.log('this is user pass ids');
+    // console.log(userPassIds);
+    // console.log('this is userSearchResultPlaceIds');
+    // console.log(userSearchResultPlaceIds);
+    for (let i = 0; i < userPassIds.length; i++) {
+      for (let m = 0; m < userSearchResultPlaceIds.length; m++) {
+        if (userPassIds[i].place_id === userSearchResultPlaceIds[m].place_id) { 
+          console.log(`there is a match`);
+          matchingPassIds.push(userSearchResultPlaceIds[m]);
+        } else { console.log('no matches again')}
       }
     }
   }
-  console.log(matchingPassIds);
   res.send("test");
 };
 /*pas

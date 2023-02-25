@@ -166,7 +166,7 @@ exports.getResortCoordinates = async function (req, res, next) {
 };
 
 exports.getResortPlaceId = async function ( req, res, next) {
-  ResortInfoModel.find({ place_id: { $exists: false } })
+  ResortInfoModel.find({place_id: {$exists: false}})
   .exec((err, successResInfo) => {
     if (err) {
       next(err);
@@ -176,7 +176,7 @@ exports.getResortPlaceId = async function ( req, res, next) {
       const getNextPlaceId = () => {
         if (i < length) {
           setTimeout(() => {
-            successResInfo[i].getPlace_id();
+            successResInfo[i].getPlace_idNearby();
             i++;
             getNextPlaceId();
           }, 1000);
