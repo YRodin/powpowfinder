@@ -23,17 +23,9 @@ exports.weatherInfo = async function (req, res, next) {
       coordinates: resort.coordinates,
     };
   });
-  // declare function that handles weather data search, updates idsCoordinatesNWeatherReport to have place_id: String, coordinates: Object, weatherData: Object
+  // declare function that handles weather data search, updates idsCoordinatesNSnowTotals to have place_id: String, coordinates: Object, snowfallSumm: Number
   async function getSnowAccumulationData() {
-    /*
-        date function considerations:
-        - maximum date range is Nov 1st - April 1st (snow months)
-        - it must check current date, and if current month is not not equal NOV or DEC, it has to set starting date's year as { current year - 1 }:
-        - if current month equals Nov or Dec, then starting year must be set as current year, in all other cases starting year is {current year - 1}
-        for example if today is 28th of February 2023, it has to set start date as Nov 1st 2022;
-        if current date falls between April 1st and October 31st - starting date year is set with 
-        {current year -1}
-       */
+  // this function sets proper start date for snow accumulation api call
     function getStartDate() {
       const now = new Date();
       // if current month is between december-oct (newYear inseason + offseason) - set start date as nov 1st of previous year
@@ -50,10 +42,11 @@ exports.weatherInfo = async function (req, res, next) {
         const month = (now.getMonth() + 1).toString().padStart(2, "0");
         const day = now.getDate().toString().padStart(2, "0");
         const sdString = `${year}-${month}-${day}`;
+        console.log(sdString);
         return sdString;
       }
     };
-
+  // this function sets proper end date for snow accumulation api call
     function getEndDate() {
       const now = new Date();
         // if current month is between apr-oct (offseason) - set end date as last date of season
@@ -73,25 +66,35 @@ exports.weatherInfo = async function (req, res, next) {
         return edString;
       }
     }
-
+  // this function sums up seasonal snow accumulation
+    function snowfallSumm (array) {
+      return array.reduce((acc, val) => {
+        if (typeof val === 'number' && !isNaN(val)) {
+          return acc + val;
+        } else {
+          return acc;
+        }
+      }, 0)
+    }
+    // 
     try {
       const weatherDataQueries = idsAndCoordinates.map((element) => {
         return axios.get(
-          `https://api.openweathermap.org/data/2.5/weather?lat=${element.coordinates.lat}&lon=${element.coordinates.lon}&appid=${keys.WEATHER_API_KEY}`
+          `https://archive-api.open-meteo.com/v1/archive?latitude=${element.coordinates.lat}&longitude=${element.coordinates.lon}&start_date=${getStartDate()}&end_date=${getEndDate()}&daily=snowfall_sum&timezone=America%2FNew_York&temperature_unit=fahrenheit&windspeed_unit=mph&precipitation_unit=inch`
         );
       });
       const weatherDataResponses = await Promise.all(weatherDataQueries);
-      const idsCoordinatesNWeatherReport = weatherDataResponses.map(
+      const idsCoordinatesNSnowTotals = weatherDataResponses.map(
         (response, index) => {
           return {
             place_id: idsAndCoordinates[index].place_id,
             coordinates: idsAndCoordinates[index].coordinates,
-            weatherData: response.data,
+            snowfallSumm: snowfallSumm(response.data.daily.snowfall_sum),
           };
         }
       );
-      res.json(idsCoordinatesNWeatherReport);
-      req.idsCoordinatesNWeatherReport = idsCoordinatesNWeatherReport;
+      res.json(idsCoordinatesNSnowTotals);
+      req.idsCoordinatesNSnowTotals = idsCoordinatesNSnowTotals;
       next();
     } catch (err) {
       console.log(err);
@@ -99,12 +102,4 @@ exports.weatherInfo = async function (req, res, next) {
   }
   await getSnowAccumulationData();
 };
-/*
-ToDo:
-- Make weather data requests for every place returned from resortFinder:
-  1) Write a function that returns dates for api search: we need Nov 1st as a starting point  and current date as a ending date of snow accumulation. Keep in mind that if today's date is past devember 31, starting point will have to have a year = current year -= 1.
-  2) With the coordinates from previus step, request weather data for each location; decide which data points to use;
-  3) Calculate "Gnar Score" based on the data choices from prevous step;
-  4) Send data about gnar score and place_ids back to client for rendering on the front end;
 
- */

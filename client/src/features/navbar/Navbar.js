@@ -18,7 +18,7 @@ const NavBar = () => {
       <Navbar bg="dark" variant="dark">
         <Container>
           <Navbar.Brand as={Link} to='/user'>
-            Powder Finder : GO DEEp OR GO HOMe!
+            Powder Finder : GO DEEP OR GO HOME!
           </Navbar.Brand>
 
           <Nav>
