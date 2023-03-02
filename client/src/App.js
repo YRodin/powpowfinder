@@ -7,6 +7,7 @@ import LoginForm from "./features/user/LoginForm";
 import MainUser from "./features/user/MainUser";
 import SignUpForm from "./features/user/SignUpForm";
 import Navbar from "./features/navbar/Navbar";
+import SearchForm from './features/searchForm/SearchForm';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       {/* */}
       <BrowserRouter>
       <Navbar/>
+      <SearchForm/>
         <Routes>
           <Route path="/" exact element={<></>}></Route>
           <Route path="/user" exact element={<><MainUser/></>}></Route>

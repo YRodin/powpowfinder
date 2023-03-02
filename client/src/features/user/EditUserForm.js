@@ -18,8 +18,6 @@ const EditUserForm = () => {
   const navigate = useNavigate();
   const { userName, token } = useSelector((state) => state.user);
 
-  
-
   function onSubmit (data) {
     // dispatch api Put request and save data in redux state
     const dataAndToken = { ...data, token};

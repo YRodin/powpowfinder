@@ -1,13 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import cheerio from "cheerio";
 
 const initialState = {
   isLoggedIn: false,
   token: null,
   seasonPass: null,
   userName: null,
-  seasonPassesInfo: null
 };
 
 // async signin request to api; returns jwt;
@@ -72,38 +70,6 @@ export const deleteUser = createAsyncThunk("user/deleteUser", async (token) => {
   }
 });
 
-export const getPassInfo = createAsyncThunk(
-  "user/getPassInfo",
-  async () => {
-    const baseUrl = "https://www.insider.com/guides/travel/best-ski-passes";
-    const passUrls = [
-      "#ikon-pass-1",
-      "#epic-pass-2",
-      "#mountain-collective-3",
-      "#indy-pass-4",
-    ];
-    const passData = [];
-
-    for (const url in passUrls) {
-      try {
-        const response = await axios.get(baseUrl + url);
-        const $ = cheerio.load(response.data);
-        const html = $(".slide-layout clearfix")
-          .find("ul")
-          .find("li")
-          .eq(0)
-          .text();
-        const prettyUrl = url.replace(/#(.*)-\d/, "$1");
-        passData.push({ [prettyUrl]: html });
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    console.log(passData);
-    return passData;
-  }
-);
-
 export const userSlice = createSlice({
   name: "user",
   initialState,
@@ -144,7 +110,6 @@ export const userSlice = createSlice({
         state.seasonPass = action.payload.seasonPass;
         state.userName = action.payload.userName;
         state.status = "fulfilled";
-
       })
       .addCase(editUser.rejected, (state) => {
         console.log(`editUser.rejected redux thunk handler invoked`);
@@ -155,15 +120,6 @@ export const userSlice = createSlice({
       })
       .addCase(deleteUser.fulfilled, () => {
         return initialState;
-      })
-      .addCase(getPassInfo.fulfilled, (state, action) => {
-        state.seasonPassesInfo = action.payload.passData;
-        state.status = "fulfilled";
-        return state;
-      })
-      .addCase(getPassInfo.rejected, (state, action) => {
-        console.log(`getPassInfo.rejected redux thunk handler invoked`);
-        return state;
       })
   },  
 });
