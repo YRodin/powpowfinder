@@ -5,7 +5,8 @@ import Form from "react-bootstrap/Form";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import axios from "axios";
+import {populateMatchingResorts} from './SearchFormSlice';
+
 
 const SearchForm = () => {
   const {
@@ -18,13 +19,13 @@ const SearchForm = () => {
   const handleRadiusChange = (e) => {
     setRadiusValue(parseInt(e.target.value));
   };
+  const dispatch = useDispatch();
   const onSubmit = async(data) => {
-    const radius = data.radius * 1000;
+    console.log(`onSubmit is invoked!`)
+    const radius = data.radius * 1000; //convert to meters
     const cityNState = data.location;
     const [city, state] = cityNState.split(' ').map((string) => string.trim());
-    try {
-      axios.post('http://localhost:5001/api/resortfinder', {city, state, radius});
-    } catch(err) { console.log(err);}
+    dispatch(populateMatchingResorts({city, state, radius}))
   };
 
   return (

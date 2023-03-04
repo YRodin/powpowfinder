@@ -5,13 +5,9 @@ const keys = require("../config/keys");
 const { get } = require("mongoose");
 
 exports.weatherInfo = async function (req, res, next) {
-  // hardCode req.matchingPassIds for now
-  req.matchingPassIds = [
-    { place_id: "ChIJ29swxmBwaocRoq1FSy3Pwqc" },
-    { place_id: "ChIJLUeXah54aocRLCubAYD6EBI" },
-    { place_id: "ChIJ5SL_Vd71aocRHD59U1wlA8s" },
-    { place_id: "ChIJW_aKIwJaaocRr6sP37eZJ_M" },
-  ];
+  console.log(`weather info is invoked!`);
+  console.log(req.body);
+  console.log(req.matchingPassIds);
   // find and save coordinates for matching resorts
   const resortQueries = req.matchingPassIds.map((element) => {
     return ResortInfo.findOne({ place_id: element.place_id }).exec();
@@ -93,13 +89,14 @@ exports.weatherInfo = async function (req, res, next) {
           };
         }
       );
-      res.json(idsCoordinatesNSnowTotals);
-      req.idsCoordinatesNSnowTotals = idsCoordinatesNSnowTotals;
-      next();
+      console.log(`idsCoordinatesNSnowTotals`);
+      console.log(idsCoordinatesNSnowTotals);
+      return idsCoordinatesNSnowTotals;
     } catch (err) {
       console.log(err);
     }
   }
-  await getSnowAccumulationData();
+  const data = await getSnowAccumulationData();
+  res.json(data);
 };
 

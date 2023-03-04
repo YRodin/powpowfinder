@@ -11,7 +11,7 @@ exports.resortFinder = async (req, res, next) => {
   const matchingPassIds = [];
   const userSearchResultPlaceIds = [];
   const userPassIds = [];
-  // make initial request for location coordinates
+  // make initial request for user selected location coordinates
   try {
     const response4UserSelection = await axios.get(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${req.body.city},+${req.body.state}&key=${keys.GOOGLE_API_KEY}`
@@ -40,7 +40,6 @@ exports.resortFinder = async (req, res, next) => {
   };
   try {
     const userSearchResults = await client.placesNearby(request);
-    console.log(userSearchResults.data.results);
     userSearchResults.data.results.forEach((skiResort) => {
       userSearchResultPlaceIds.push({ place_id: skiResort.place_id });
     });
@@ -61,18 +60,18 @@ exports.resortFinder = async (req, res, next) => {
       });
       findMatchingIds(userPassIds, userSearchResultPlaceIds);
     } catch (err) {
-      console.log(err);
+      next(err);
     }
   } else {
     // if user does not provide passName info - retreive ids of all ski resorts in data base and run findMatchingIds
     try {
       const allResorts = await ResortInfo.find({}).exec();
       const allResortsPlace_ids = allResorts.map((resort) => {
-        return resort.place_id;
+        return { place_id: resort.place_id };
       });
       findMatchingIds(allResortsPlace_ids, userSearchResultPlaceIds);
     } catch (err) {
-      console.log(err);
+     next(err);
     }
     req.userSearchResultPlaceIds = userSearchResultPlaceIds;
     // console.log(userSearchResultPlaceIds);
@@ -86,7 +85,7 @@ exports.resortFinder = async (req, res, next) => {
           console.log(`there is a match`);
           matchingPassIds.push(userSearchResultPlace_ids[m]);
         } else {
-          console.log("no matches again");
+          // console.log("no matches again");
         }
       }
     }

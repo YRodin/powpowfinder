@@ -21,6 +21,6 @@ module.exports = function (app) {
   app.get("/api/getresortcoordinates", dataCollection.getResortCoordinates);
   app.post("/api/getresortplaceid", dataCollection.getResortPlaceId);
   // next 3 routes are executed to process user search results and return data for display by client side, same principle, when consolidating use next() and chain in the same route
-  app.post("/api/resortfinder", resortFinder); // add requireAuth when finished testing
+  app.post("/api/resortfinder", resortFinder, weatherInfo); // add requireAuth when finished testing
   app.get("/api/weatherInfo", weatherInfo);
 };
