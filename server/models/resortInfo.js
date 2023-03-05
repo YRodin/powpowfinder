@@ -7,6 +7,7 @@ const { Client } = require("@googlemaps/google-maps-services-js");
 const ResortInfoSchema = new Schema({
   city: String,
   state: String,
+  name: String,
   place_id: String,
   coordinates: { lat: Number, lon: Number },
   pass: [{ type: Schema.Types.ObjectId, ref: "passinfo" }],
@@ -33,7 +34,7 @@ ResortInfoSchema.methods.getCoordinates = async function (req, res, next) {
   }
 };
 
-
+// deprecated
 ResortInfoSchema.methods.getPlace_id = async function () {
   const request = {
     params: {
@@ -50,6 +51,7 @@ ResortInfoSchema.methods.getPlace_id = async function () {
     console.log(err);
   }
 };
+// because results of scraping web for ski resorts give us city and states only, we'll have to find a ski resort nearby
 ResortInfoSchema.methods.getPlace_idNearby = async function () {
   const client = new Client({});
   const location = { latitude: this.coordinates.lat, longitude: this.coordinates.lon };
@@ -69,6 +71,7 @@ ResortInfoSchema.methods.getPlace_idNearby = async function () {
   };
   const response = await client.placesNearby(request);
   this.place_id = response?.data?.results[0]?.place_id;
+  this.name = response?.data?.results[0]?.name;
   console.log(`this is updated placeId: ${response?.data?.results[0]?.place_id}`)
   this.save();
 }

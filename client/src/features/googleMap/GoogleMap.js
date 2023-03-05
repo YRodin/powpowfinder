@@ -3,6 +3,7 @@ import GoogleMapReact from "google-map-react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import keys from "/server/config/keys";
+import { useSelector } from "react-redux";
 
 const Marker = ({ name, url }) => (
   <div className="marker">
@@ -14,6 +15,18 @@ const Marker = ({ name, url }) => (
 );
 
 export default function GoogleMap() {
+  const resorts2Display = useSelector((state)=> state.resorts2Display.matchingResorts);
+  const markers = resorts2Display.map((resort)=> {
+    return(
+      <Marker
+        key={resort.place_id}
+        lat={resort.coordinates.lat}
+        lng={resort.coordinates.lon}
+        name={resort.name}
+        url={resort.url}
+      />
+    )
+  })
   const defaultProps = {
     center: {
       lat: 39.7392,
@@ -29,7 +42,7 @@ export default function GoogleMap() {
           defaultCenter={defaultProps.center}
           defaultZoom={defaultProps.zoom}
         >
-          <Marker lat={59.955413} lng={30.337844} text="My Marker" />
+          {markers}
         </GoogleMapReact>
       </Row>
     </Container>

@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import {populateMatchingResorts} from './SearchFormSlice';
 
-
 const SearchForm = () => {
   const {
     register,
