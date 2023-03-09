@@ -62,10 +62,10 @@ ResortInfoSchema.methods.getPlace_idNearby = async function () {
       keword: 'ski resort',
       key: keys.GOOGLE_API_KEY,
       type: [
-        'tourist_attraction',
-        'lodging',
+        // 'tourist_attraction',
+        // 'lodging',
         'point_of_interest',
-        'establishment'
+        // 'establishment'
       ]
     },
   };

@@ -9,7 +9,7 @@ exports.getPassInfo = async function (req, res, next) {
   const passUrls = {
     epic: "https://epicorikon.com/",
     ikon: "https://epicorikon.com/",
-    mountainCollective: "https://mountaincollective.com/",
+    mountainCollective: "https://www.skimag.com/ski-resort-life/mountain-collective-details/",
     indy: "https://www.indyskipass.com/resorts/", //indy requires traversing further down dom tree to grab data
   };
   const passesAndPeaks = {};
@@ -56,16 +56,11 @@ exports.getPassInfo = async function (req, res, next) {
     const peaksMountainCollective = [];
     const response = await axios.get(passUrls.mountainCollective);
     const $ = cheerio.load(response.data);
-    const ul = $(".resort-list").find("ul");
-    $("#accordionunited-states .card").each((i, element) => {
+    const h3 = $.find()
+    
       let cityNState = $(element).find("span").text();
-      cityNState = cityNState.replace(/\s*\|.*/, "");
-      cityNState = cityNState.replace(/^\s*NEW!\s*/, "");
-      cityNState = cityNState.split(", ");
-      let city = cityNState[0].trim();
-      let formattedState = cityNState[1].trim().slice(0, 2);
       peaksMountainCollective.push({ city: city, state: formattedState });
-    });
+   
     passesAndPeaks.mountainCollective = peaksMountainCollective;
   } catch (err) {
     console.log(err.message);
