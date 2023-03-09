@@ -13,7 +13,7 @@ exports.getPassInfo = async function (req, res, next) {
     indy: "https://www.indyskipass.com/resorts/", //indy requires traversing further down dom tree to grab data
   };
   const passesAndPeaks = {};
-  //get list of mouintains accessible to "Epic" season pass holders
+  // get list of mouintains accessible to "Epic" season pass holders
   try {
     const peaksEpic = [];
     const response = await axios.get(passUrls.epic);
@@ -51,21 +51,25 @@ exports.getPassInfo = async function (req, res, next) {
   } catch (err) {
     console.log(err.message);
   }
-  //get list of mouintains accessible to "MountainCollective" season pass holders
+  // get list of mouintains accessible to "MountainCollective" season pass holders
   try {
     const peaksMountainCollective = [];
     const response = await axios.get(passUrls.mountainCollective);
     const $ = cheerio.load(response.data);
-    const h3 = $.find()
-    
-      let cityNState = $(element).find("span").text();
-      peaksMountainCollective.push({ city: city, state: formattedState });
-   
+    const h3 = $('h3:contains("United States")');
+    const ul = h3.next("ul").children('li');
+    ul.each((index, li) => {
+      let cityAndState = $(li).text();
+      [city, state] = cityAndState.split(',');
+      console.log(`city: ${city.trim()}`);
+      console.log(`state: ${state.trim().replace(/ .*/g, "")}`);
+      peaksMountainCollective.push({ city: city.trim(), state: state.trim().replace(/ .*/g, "")});
+    })
     passesAndPeaks.mountainCollective = peaksMountainCollective;
   } catch (err) {
-    console.log(err.message);
+    console.log(err);
   }
-  //get list of mouintains accessible to "Indy" season pass holders
+  // get list of mouintains accessible to "Indy" season pass holders
   try {
     const regionUrls = [
       "west-region",
@@ -140,7 +144,7 @@ exports.getPassInfo = async function (req, res, next) {
       });
     });
   }
-  //send response for analysis
+  // send response for analysis
   res.json(passesAndPeaks);
 };
 

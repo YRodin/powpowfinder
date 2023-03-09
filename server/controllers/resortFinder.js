@@ -30,17 +30,19 @@ exports.resortFinder = async (req, res, next) => {
       radius: req.body.radius,
       keyword: "ski resort",
       key: keys.GOOGLE_API_KEY,
-      type: [
-        "tourist_attraction",
-        "lodging",
-        "point_of_interest",
-        "establishment",
-      ],
+      // type: [
+      //   "tourist_attraction",
+      //   "lodging",
+      //   "point_of_interest",
+      //   "establishment",
+      // ],
     },
   };
   try {
     const userSearchResults = await client.placesNearby(request);
     userSearchResults.data.results.forEach((skiResort) => {
+      console.log(`placeId returned in resortFinder userSearchResults`);
+      console.log(userSearchResults);
       userSearchResultPlaceIds.push({ place_id: skiResort.place_id });
     });
   } catch (err) {
@@ -85,7 +87,7 @@ exports.resortFinder = async (req, res, next) => {
           console.log(`there is a match`);
           matchingPassIds.push(userSearchResultPlace_ids[m]);
         } else {
-          // console.log("no matches again");
+          console.log("no matches so far");
         }
       }
     }

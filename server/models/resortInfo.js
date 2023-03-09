@@ -58,15 +58,16 @@ ResortInfoSchema.methods.getPlace_idNearby = async function () {
   const request = {
     params: {
       location,
-      radius: 10000,
+      radius: 1610,
       keword: 'ski resort',
       key: keys.GOOGLE_API_KEY,
-      type: [
-        // 'tourist_attraction',
-        // 'lodging',
-        'point_of_interest',
-        // 'establishment'
-      ]
+      // type: [
+      //   // 'tourist_attraction',
+      //   // 'lodging',
+      //   // 'point_of_interest',
+      //   // 'establishment'
+      //   ''
+      // ]
     },
   };
   const response = await client.placesNearby(request);
