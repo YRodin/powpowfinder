@@ -61,8 +61,6 @@ exports.getPassInfo = async function (req, res, next) {
     ul.each((index, li) => {
       let cityAndState = $(li).text();
       [city, state] = cityAndState.split(',');
-      console.log(`city: ${city.trim()}`);
-      console.log(`state: ${state.trim().replace(/ .*/g, "")}`);
       peaksMountainCollective.push({ city: city.trim(), state: state.trim().replace(/ .*/g, "")});
     })
     passesAndPeaks.mountainCollective = peaksMountainCollective;
@@ -165,7 +163,7 @@ exports.getResortCoordinates = async function (req, res, next) {
 };
 
 exports.getResortPlaceId = async function ( req, res, next) {
-  ResortInfoModel.find({place_id: {$exists: false}})
+  ResortInfoModel.find({})
   .exec((err, successResInfo) => {
     if (err) {
       next(err);
